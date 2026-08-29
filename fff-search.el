@@ -1,7 +1,22 @@
 ;;; -*- lexical-binding: t; -*-
+;; Copyright (C) 2026 Ben Simms
+
+;; Author: Ben Simms
+;; Homepage: https://github.com/simmsb/emacs-fff
+;; Package-Requires: ((emacs "29.1") (consult "3.3"))
+;; Version: 0.0.1
+;; Keywords: convenience
+
+;;; Code:
 
 (require 'fff-module)
-(require 'f)
+(require 'consult)
+(eval-when-compile (require 'cl-lib))
+
+(defcustom fff-cache-dir
+  (temporary-file-directory)
+  "Location to store fff databases in"
+  :type 'string)
 
 (defvar fff--searchers (make-hash-table :test 'equal))
 
@@ -9,7 +24,7 @@
   (let ((val (gethash base-path fff--searchers)))
     (unless val
       (let* ((path-hash (sha1 base-path))
-             (database-path (doom-cache-dir "fff" path-hash))
+             (database-path (file-name-concat fff-cache-dir "fff" path-hash))
              (searcher (fff-module-new-file-picker database-path base-path)))
         (puthash base-path searcher fff--searchers)
         searcher))
