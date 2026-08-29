@@ -1,0 +1,23 @@
+[package]
+name = "emacs-fff"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+emacs = "0.21.0"
+fff-search = { version = "0.10.5", features = ["mimalloc", "zlob"] }
+mimalloc = { version = "0.1.52", features = [] }
+
+[profile.release]
+codegen-units = 1
+debug = 0
+strip = true
+debug-assertions = false # <-
+incremental = false
+lto = 'fat'
+opt-level = 3           # <-
+overflow-checks = false  # <-
+panic = 'abort'
