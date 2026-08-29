@@ -14,7 +14,8 @@
 (eval-when-compile (require 'cl-lib))
 
 (defgroup fff nil
-  "FFF searcher")
+  "FFF searcher"
+  :group 'files)
 
 (defcustom fff-cache-dir
   (temporary-file-directory)
@@ -51,7 +52,7 @@
         (when (and (< match-start line-len) (<= match-end line-len))
           (add-face-text-property match-start match-end 'consult-highlight-match nil line))))))
 
-(defun fff--consult-format-candidates (result query)
+(defun fff--consult-format-candidates (result)
   (cl-map 'list (pcase-lambda (`(,filepath ,line-number ,line ,match-regions))
                   (fff--consult-highlight-matches line match-regions)
                   (let* ((file-len (length filepath))
@@ -60,10 +61,10 @@
                     (when (and consult-grep-max-columns
                                (length> line consult-grep-max-columns))
                       (setq line (substring line 0 consult-grep-max-columns)))
-                    (setq str (concat filepath ":" line-number-str ":" line))
-                    (add-text-properties 0 file-len `(face consult-file consult--prefix-group ,filepath) str)
-                    (put-text-property (1+ file-len) (+ 1 file-len line-number-len) 'face 'consult-line-number str)
-                    str))
+                    (let ((str (concat filepath ":" line-number-str ":" line)))
+                      (add-text-properties 0 file-len `(face consult-file consult--prefix-group ,filepath) str)
+                      (put-text-property (1+ file-len) (+ 1 file-len line-number-len) 'face 'consult-line-number str)
+                      str)))
           result))
 
 (defun fff--consult-grep (prompt dir initial)
@@ -71,7 +72,7 @@
   (consult--read
    (consult--dynamic-collection
        (lambda (input callback)
-         (funcall callback (fff--consult-format-candidates (fff--do-search dir input) input))))
+         (funcall callback (fff--consult-format-candidates (fff--do-search dir input)))))
    :prompt prompt
    :lookup #'consult--lookup-member
    :state (consult--grep-state)
@@ -90,8 +91,8 @@
 
   The initial input is given by the INITIAL argument."
   (interactive "P")
-  (pcase-let* ((`(,prompt ,paths ,dir) (consult--directory-prompt "Grep" dir))
+  (pcase-let* ((`(,prompt ,_ ,dir) (consult--directory-prompt "Grep" dir))
                (default-directory dir))
-     (fff--consult-grep prompt dir initial)))
+    (fff--consult-grep prompt dir initial)))
 
 (provide 'fff-search)
