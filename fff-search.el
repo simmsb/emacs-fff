@@ -13,10 +13,14 @@
 (require 'consult)
 (eval-when-compile (require 'cl-lib))
 
+(defgroup fff nil
+  "FFF searcher")
+
 (defcustom fff-cache-dir
   (temporary-file-directory)
   "Location to store fff databases in"
-  :type 'string)
+  :type 'string
+  :group 'fff)
 
 (defvar fff--searchers (make-hash-table :test 'equal))
 
