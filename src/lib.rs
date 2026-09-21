@@ -3,9 +3,7 @@ use std::{path::PathBuf, time::Duration};
 use emacs::{defun, Env, IntoLisp, Result, Value, Vector};
 
 use fff_search::{
-    FilePicker, FilePickerOptions, FrecencyTracker, FuzzySearchOptions, GrepConfig,
-    GrepSearchOptions, QueryParser, QueryTracker, SharedFilePicker, SharedFrecency,
-    SharedQueryTracker,
+    FilePicker, FilePickerOptions, FrecencyTracker, FuzzySearchOptions, GitRecencyConfig, GrepConfig, GrepSearchOptions, QueryParser, QueryTracker, SharedFilePicker, SharedFrecency, SharedQueryTracker,
 };
 use mimalloc::MiMalloc;
 
@@ -52,6 +50,7 @@ fn new_file_picker(database_path: String, base_path: String) -> Result<EmacsFile
             follow_symlinks: true,
             enable_fs_root_scanning: false,
             enable_home_dir_scanning: false,
+            git_recency: GitRecencyConfig::default(),
         },
     )?;
 

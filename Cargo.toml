@@ -8,7 +8,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 emacs = "0.21.0"
-fff-search = { version = "0.10.5", features = ["mimalloc", "zlob"] }
+fff-search = { version = "0.11.0", features = ["mimalloc", "zlob"] }
 mimalloc = { version = "0.1.52", features = [] }
 
 [profile.release]
