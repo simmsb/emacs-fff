@@ -148,6 +148,7 @@ fn fuzzy_grep_search<'e>(
     env: &'e Env,
     fff: &mut EmacsFilePicker,
     query: String,
+    page_limit: usize,
 ) -> Result<Value<'e>> {
     let picker_guard = fff.file_picker.read()?;
     let picker = picker_guard.as_ref().unwrap();
@@ -157,7 +158,7 @@ fn fuzzy_grep_search<'e>(
     let mut results = picker.grep(
         &query,
         &GrepSearchOptions {
-            page_limit: 10_000,
+            page_limit,
             mode: fff_search::GrepMode::Regex,
             ..GrepSearchOptions::default()
         },

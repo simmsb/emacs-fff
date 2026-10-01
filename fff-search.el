@@ -23,6 +23,12 @@
   :type 'string
   :group 'fff)
 
+(defcustom fff-max-results
+  1000
+  "Maximum number of results to ask from fff"
+  :type 'natnum
+  :group 'fff)
+
 (defvar fff--searchers (make-hash-table :test 'equal))
 
 (defun fff--get-searcher (base-path)
@@ -38,7 +44,7 @@
 (defun fff--do-search (base-path input)
   (let* ((searcher (fff--get-searcher base-path)))
     (while (not (fff-module-poll-file-picker-indexed searcher 10)))
-    (pcase (fff-module-fuzzy-grep-search searcher input)
+    (pcase (fff-module-fuzzy-grep-search searcher input fff-max-results)
       (`(,results . ,filepaths)
        (cl-map 'vector (pcase-lambda (`(,file-idx . ,rest))
                          (let* ((filepath (elt filepaths file-idx)))
