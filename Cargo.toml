@@ -7,7 +7,7 @@ edition = "2024"
 crate-type = ["cdylib"]
 
 [dependencies]
-emacs = { version = "0.22.0", features = ["emacs-28"] }
+emacs = { version = "0.23.0", features = ["emacs-28"] }
 fff-search = { version = "0.11.0", features = ["mimalloc", "zlob"] }
 mimalloc = { version = "0.1.52", features = [] }
 
