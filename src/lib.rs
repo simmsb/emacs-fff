@@ -100,10 +100,9 @@ fn fuzzy_file_search<'e>(
                     env,
                     offsets
                         .into_iter()
-                        .map(|(start, end)| env.cons(start, end).unwrap()),
-                )
-                .unwrap();
-                env.cons(file_path, offsets).unwrap()
+                        .map(|(start, end)| env.cons(start, end)),
+                )?;
+                env.cons(file_path, offsets)
             }),
     )?;
 
@@ -180,25 +179,26 @@ fn fuzzy_grep_search<'e>(
                 match_item
                     .match_byte_offsets
                     .iter()
-                    .map(|(start, end)| env.cons(*start, *end).unwrap()),
-            )
-            .unwrap();
+                    .map(|(start, end)| env.cons(*start, *end)),
+            )?;
             env.list([
-                file_idx.into_lisp(env).unwrap(),
-                match_item.line_number.into_lisp(env).unwrap(),
-                (&match_item.line_content).into_lisp(env).unwrap(),
-                offsets.into_lisp(env).unwrap(),
+                file_idx.into_lisp(env)?,
+                match_item.line_number.into_lisp(env)?,
+                (&match_item.line_content).into_lisp(env)?,
+                offsets.into_lisp(env)?,
             ])
-            .unwrap()
         }),
     )?;
 
-    let file_names = make_vector(env, results.files.iter().map(|f| f.relative_path(picker)))?;
+    let file_names = make_vector(
+        env,
+        results.files.iter().map(|f| Ok(f.relative_path(picker))),
+    )?;
 
     env.cons(r, file_names)
 }
 
-fn make_vector<'e, T: IntoLisp<'e>, I: Iterator<Item = T> + ExactSizeIterator>(
+fn make_vector<'e, T: IntoLisp<'e>, I: Iterator<Item = Result<T>> + ExactSizeIterator>(
     env: &'e Env,
     it: impl IntoIterator<IntoIter = I>,
 ) -> Result<Vector<'e>> {
@@ -206,7 +206,7 @@ fn make_vector<'e, T: IntoLisp<'e>, I: Iterator<Item = T> + ExactSizeIterator>(
     let vector = env.make_vector(it.len(), ())?;
 
     for (idx, x) in it.enumerate() {
-        vector.set(idx, x)?;
+        vector.set(idx, x?)?;
     }
 
     Ok(vector)
